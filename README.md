@@ -1,3 +1,6 @@
-# Shooter Game on C++
+# Shooter Game on Blueprint & C++
 
-Developed with Unreal Engine 4
+### **Work in progress**
+
+### *Using Unreal Engine 4.26*
+
