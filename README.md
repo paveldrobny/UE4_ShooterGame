@@ -1,4 +1,4 @@
-# Shooter Game on Blueprint & C++
+# Shooter Game on C++ & Blueprint
 
 ### **Work in progress**
 
