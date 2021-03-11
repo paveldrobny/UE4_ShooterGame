@@ -8,7 +8,7 @@
 ### 11.03.2021
 * Added
   * Weapon System
-    * weapon parameters of the main class WeaponBase
+    * weapon parameters of the main class AWeapon
     * switch weapon
     * specific weapon parameters (reload time, etс)
 * Fixed
