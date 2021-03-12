@@ -87,7 +87,10 @@ void AShooter_GameCharacter::OnStartFire()
 
 void AShooter_GameCharacter::OnStopFire()
 {
-
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StopFire();
+	}
 }
 
 void AShooter_GameCharacter::OnStartTargeting()
@@ -102,7 +105,10 @@ void AShooter_GameCharacter::OnStopTargeting()
 
 void AShooter_GameCharacter::OnReload()
 {
-
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->Reload();
+	}
 }
 
 void AShooter_GameCharacter::EquipPrimaryWeapon()
@@ -112,14 +118,16 @@ void AShooter_GameCharacter::EquipPrimaryWeapon()
 
 void AShooter_GameCharacter::EquipSecondaryWeapon()
 {
-	if (Inventory.Num() >= 1) {
+	if (Inventory.Num() >= 1)
+	{
 		SelectWeapon(1);
 	}
 }
 
 void AShooter_GameCharacter::OnStartRunning()
 {
-	if (!bIsCrouch) {
+	if (!bIsCrouch)
+	{
 		if (!GetVelocity().IsZero())
 		{
 			SetRunning(true);
@@ -148,13 +156,16 @@ void AShooter_GameCharacter::OnStopCrouch()
 
 void AShooter_GameCharacter::CheckCameraPosition()
 {
-	if (bIsCrouch) {
+	if (bIsCrouch)
+	{
 		SetCameraPosition(CrouchCameraPosition);
 	}
-	else if (bIsRunning) {
+	else if (bIsRunning)
+	{
 		SetCameraPosition(RunningCameraPosition);
 	}
-	else {
+	else
+	{
 		SetCameraPosition(NormalCameraPosition);
 	}
 }
@@ -225,7 +236,7 @@ void AShooter_GameCharacter::MoveRight(float Value)
 
 
 // Character
-float AShooter_GameCharacter::PercentHealth() const
+float AShooter_GameCharacter::GetPercentHealth() const
 {
 	return CurrentHealth / MaxHealth;
 }
@@ -258,6 +269,11 @@ void AShooter_GameCharacter::SelectWeapon(int index)
 		CurrentWeapon = Inventory[CurrentWeaponIndex];
 	}
 	Inventory[CurrentWeaponIndex]->SetActorHiddenInGame(false);
+}
+
+AWeapon* AShooter_GameCharacter::GetCurrentWeapon() const
+{
+	return CurrentWeapon;
 }
 
 int AShooter_GameCharacter::GetCurrentWeaponIndex() const

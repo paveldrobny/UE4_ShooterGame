@@ -21,6 +21,7 @@ public:
 
 	AShooter_GameCharacter();
 
+
 	// Camera
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float BaseTurnRate;
@@ -45,14 +46,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 		FVector TargetingCameraPosition;
 
+
 	// Character
 	float CurrentHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
-	float MaxHealth = 100.0f;
+		float MaxHealth = 100.0f;
 
 	UFUNCTION(BlueprintCallable, Category = Character)
-		float PercentHealth() const;
+		float GetPercentHealth() const;
+
 
 	// Movement
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
@@ -73,13 +76,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Movement)
 		bool IsCrouch() const;
 
+
 	// Weapon
 	class AWeapon* CurrentWeapon;
+
+	UFUNCTION(BlueprintCallable, Category = Weapon)
+		AWeapon* GetCurrentWeapon() const;
 
 	int CurrentWeaponIndex = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<AWeapon*> Inventory;
+		TArray<AWeapon*> Inventory;
 
 	void AddToInventory(class AWeapon* Weapon);
 

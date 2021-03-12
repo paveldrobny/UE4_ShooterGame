@@ -3,6 +3,9 @@
 
 #include "Weapon.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
+
 
 AWeapon::AWeapon()
 {
@@ -10,6 +13,8 @@ AWeapon::AWeapon()
 
 	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	RootComponent = MeshComp;
+
+	Player = Cast<AShooter_GameCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 }
 
 void AWeapon::BeginPlay()
@@ -26,30 +31,45 @@ void AWeapon::Tick(float DeltaTime)
 
 void AWeapon::Fire()
 {
-	AActor* MyOwner = GetOwner();
-	if (MyOwner)
-	{
-		FVector Location;
-		FRotator Rotation;
-		MyOwner->GetActorEyesViewPoint(Location, Rotation);
+	GetWorld()->GetTimerManager().SetTimer(FireHandle, this, &AWeapon::AutoFire, ShootRate, true, 0.0f);
+}
 
-		FVector LineEnd = Location + (Rotation.Vector() * ShotRange);
+void AWeapon::StopFire()
+{
+	GetWorld()->GetTimerManager().ClearTimer(FireHandle);
+}
 
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(MyOwner);
-		QueryParams.AddIgnoredActor(this);
-		QueryParams.bTraceComplex = true;
-
-		FHitResult Hit;
-
-		bool isTrace = GetWorld()->LineTraceSingleByChannel(Hit, Location, LineEnd, ECC_Visibility, QueryParams);
-
-		if (isTrace)
+void AWeapon::AutoFire()
+{
+	if (LoadedAmmo > 0) {
+		if (Player)
 		{
-			DrawDebugLine(GetWorld(), Location, LineEnd, FColor::Red, false, 1.0f);
+			FVector Location;
+			FRotator Rotation;
+			Player->GetActorEyesViewPoint(Location, Rotation);
+
+			FVector LineEnd = Location + (Rotation.Vector() * (ShootRangeInMeters * 100.0f));
+
+			FCollisionQueryParams QueryParams;
+			QueryParams.AddIgnoredActor(Player);
+			QueryParams.AddIgnoredActor(this);
+			QueryParams.bTraceComplex = true;
+
+			FHitResult Hit;
+			bool isTrace = GetWorld()->LineTraceSingleByChannel(Hit, Location, LineEnd, ECC_Visibility, QueryParams);
+
+			if (isTrace)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Trace!"));
+			}
+
+			DrawDebugLine(GetWorld(), Location, LineEnd, FColor::Red, false, 5.0f);
+			// PlayAnimation(FireAnimation);
+
+			LoadedAmmo--;
+			CheckAmmo();
 		}
 	}
-
 }
 
 void AWeapon::Reload()
@@ -57,17 +77,30 @@ void AWeapon::Reload()
 	if (AmmoPool >= (MaxLoadedAmmo - LoadedAmmo)) {
 		AmmoPool -= (MaxLoadedAmmo - LoadedAmmo);
 		LoadedAmmo = MaxLoadedAmmo;
+		bIsNeedReload = false;
 		return;
 	}
-
 	LoadedAmmo += AmmoPool;
 	AmmoPool = 0;
+	bIsNeedReload = false;
 }
 
 void AWeapon::CheckAmmo()
 {
-	LoadedAmmo <= LowAmmoReload && AmmoPool > 0 ? bIsNeedReload = true : bIsNeedReload = false;
-	LoadedAmmo <= 0 && AmmoPool <= 0 ? bIsNoAmmo = true : bIsNoAmmo = false;
+	(LoadedAmmo <= LowAmmoMessage && AmmoPool > 0) ? bIsNeedReload = true : bIsNeedReload = false;
+	(LoadedAmmo <= 0 && AmmoPool <= 0) ? bIsNoAmmo = true : bIsNoAmmo = false;
+}
+
+void AWeapon::PlayAnimation(UAnimMontage* AnimMontage)
+{
+	if (AnimMontage != nullptr)
+	{
+		UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(AnimMontage, 1.0f);
+		}
+	}
 }
 
 int AWeapon::GetLoadedAmmo() const

@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../Shooter_GameCharacter.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
 //class USkeletalMeshComponent;
+class UAnimMontage;
+
 
 UCLASS()
 class SHOOTER_GAME_API AWeapon : public AActor
@@ -17,9 +20,11 @@ public:
 	AWeapon();
 
 	void Fire();
+	void StopFire();
 	void Reload();
 
-	void CheckAmmo();
+	FTimerHandle FireHandle;
+	bool isFiring;
 
 protected:
 
@@ -28,43 +33,63 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		USkeletalMeshComponent* MeshComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ShotRange;
+	class AShooter_GameCharacter* Player;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	void AutoFire();
+	void CheckAmmo();
+	void PlayAnimation(UAnimMontage* AnimMontage);
+
+
+	// Weapon Instance
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
+	//	UAnimMontage* FireAnimation;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
+	//	UAnimMontage* ReloadAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
+		float ShootRangeInMeters;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
+		float ShootRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
 		int LoadedAmmo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
 		int MaxLoadedAmmo;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
 		int AmmoPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
 		int MaxAmmoPool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int LowAmmoReload = -1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
+		int LowAmmoMessage = -1;
 
+
+	// Weapon Info
 	bool bIsNeedReload;
 	bool bIsNoAmmo;
 
-	UFUNCTION(BlueprintCallable, Category = WeaponInstance)
+	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		int GetLoadedAmmo() const;
 
-	UFUNCTION(BlueprintCallable, Category = WeaponInstance)
+	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		int GetMaxLoadedAmmo() const;
 
-	UFUNCTION(BlueprintCallable, Category = WeaponInstance)
+	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		int GetAmmoPool() const;
 
-	UFUNCTION(BlueprintCallable, Category = WeaponInstance)
+	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		int GetMaxAmmoPool() const;
 
-	UFUNCTION(BlueprintCallable, Category = WeaponInstance)
+	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		bool IsNeedReload() const;
 
-	UFUNCTION(BlueprintCallable, Category = WeaponInstance)
+	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		bool IsNoAmmo() const;
 
 public:
