@@ -21,10 +21,8 @@
     * Health bar
     * No ammo
 * Fixed
-  * Pin is unvilid in  
-  ```cpp 
-  CreateWeapon(TSubclassOf<AWeapon> WeaponClass, FName SocketName)
-  ```
+  * Pin is unvilid in  CreateWeapon(TSubclassOf<AWeapon> WeaponClass, FName SocketName)
+
     
 ### 11.03.2021
 * Added
