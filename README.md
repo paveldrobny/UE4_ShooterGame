@@ -15,7 +15,6 @@
     * Reload
     * Shoot range in meters
     * Shoot rate
-    * Play animation in firing (Test)
   * Widget
     * Ammo counter
     * Health bar
