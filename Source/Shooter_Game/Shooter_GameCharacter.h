@@ -44,6 +44,9 @@ public:
 		FVector CrouchCameraPosition;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+		FVector CrouchTargetingCameraPosition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 		FVector TargetingCameraPosition;
 
 
@@ -58,23 +61,34 @@ public:
 
 
 	// Movement
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 		float CrouchSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 		float RunningSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
+		float TargetingSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Character)
 		float NormalSpeed;
 
 	bool bIsRunning;
 	bool bIsCrouch;
+	bool bIsFiring;
+	bool bIsTargeting;
 
-	UFUNCTION(BlueprintCallable, Category = Movement)
+	UFUNCTION(BlueprintCallable, Category = Character)
 		bool IsRunning() const;
 
-	UFUNCTION(BlueprintCallable, Category = Movement)
+	UFUNCTION(BlueprintCallable, Category = Character)
 		bool IsCrouch() const;
+
+	UFUNCTION(BlueprintCallable, Category = Character)
+		bool IsFiring() const;
+
+	UFUNCTION(BlueprintCallable, Category = Character)
+		bool IsTargeting() const;
 
 
 	// Weapon
@@ -85,8 +99,7 @@ public:
 
 	int CurrentWeaponIndex = 0;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		TArray<AWeapon*> Inventory;
+	TArray<AWeapon*> Inventory;
 
 	void AddToInventory(class AWeapon* Weapon);
 
@@ -100,8 +113,6 @@ public:
 		int GetCurrentWeaponIndex() const;
 
 
-protected:
-
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void TurnAtRate(float Rate);
@@ -110,8 +121,11 @@ protected:
 	void CheckCameraPosition();
 	void SetCameraPosition(FVector Position);
 	void SetMaxSpeed(float value);
+
 	void SetRunning(bool value);
 	void SetCrouching(bool value);
+	void SetFiring(bool value);
+	void SetTargeting(bool value);
 
 	void OnStartRunning();
 	void OnStopRunning();

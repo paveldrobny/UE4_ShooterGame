@@ -8,6 +8,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Public/Weapon.h"
+#include "Engine/Engine.h"
 
 AShooter_GameCharacter::AShooter_GameCharacter()
 {
@@ -81,6 +82,7 @@ void AShooter_GameCharacter::OnStartFire()
 {
 	if (CurrentWeapon)
 	{
+		SetFiring(true);
 		CurrentWeapon->Fire();
 	}
 }
@@ -89,18 +91,26 @@ void AShooter_GameCharacter::OnStopFire()
 {
 	if (CurrentWeapon)
 	{
+		SetFiring(false);
 		CurrentWeapon->StopFire();
 	}
 }
 
 void AShooter_GameCharacter::OnStartTargeting()
 {
-
+	SetTargeting(true);
+	SetMaxSpeed(TargetingSpeed);
 }
 
 void AShooter_GameCharacter::OnStopTargeting()
 {
-
+	if (bIsCrouched)
+	{
+		SetTargeting(false);
+		return;
+	}
+	SetTargeting(false);
+	SetMaxSpeed(NormalSpeed);
 }
 
 void AShooter_GameCharacter::OnReload()
@@ -144,6 +154,9 @@ void AShooter_GameCharacter::OnStopRunning()
 
 void AShooter_GameCharacter::OnStartCrouch()
 {
+	if (bIsRunning) {
+		SetRunning(false);
+	}
 	SetCrouching(true);
 	SetMaxSpeed(CrouchSpeed);
 }
@@ -158,15 +171,26 @@ void AShooter_GameCharacter::CheckCameraPosition()
 {
 	if (bIsCrouch)
 	{
+	
 		SetCameraPosition(CrouchCameraPosition);
 	}
 	else if (bIsRunning)
 	{
 		SetCameraPosition(RunningCameraPosition);
 	}
+	else if (bIsTargeting)
+	{
+
+		SetCameraPosition(TargetingCameraPosition);
+	}
 	else
 	{
 		SetCameraPosition(NormalCameraPosition);
+	}
+
+	if (bIsCrouch && bIsTargeting)
+	{
+		SetCameraPosition(CrouchTargetingCameraPosition);
 	}
 }
 
@@ -190,6 +214,16 @@ void AShooter_GameCharacter::SetCrouching(bool value)
 	bIsCrouch = value;
 }
 
+void AShooter_GameCharacter::SetFiring(bool value)
+{
+	bIsFiring = value;
+}
+
+void AShooter_GameCharacter::SetTargeting(bool value)
+{
+	bIsTargeting = value;
+}
+
 bool AShooter_GameCharacter::IsRunning() const
 {
 	return bIsRunning;
@@ -198,6 +232,16 @@ bool AShooter_GameCharacter::IsRunning() const
 bool AShooter_GameCharacter::IsCrouch() const
 {
 	return bIsCrouch;
+}
+
+bool AShooter_GameCharacter::IsFiring() const
+{
+	return bIsFiring;
+}
+
+bool AShooter_GameCharacter::IsTargeting() const
+{
+	return bIsTargeting;
 }
 
 void AShooter_GameCharacter::TurnAtRate(float Rate)

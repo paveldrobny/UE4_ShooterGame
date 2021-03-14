@@ -36,12 +36,17 @@ void AWeapon::Fire()
 
 void AWeapon::StopFire()
 {
+	if (Player)
+	{
+		Player->SetFiring(false);
+	}
 	GetWorld()->GetTimerManager().ClearTimer(FireHandle);
 }
 
 void AWeapon::AutoFire()
 {
-	if (LoadedAmmo > 0) {
+	if (CanFire()) 
+	{
 		if (Player)
 		{
 			FVector Location;
@@ -64,17 +69,19 @@ void AWeapon::AutoFire()
 			}
 
 			DrawDebugLine(GetWorld(), Location, LineEnd, FColor::Red, false, 5.0f);
-			// PlayAnimation(FireAnimation);
 
 			LoadedAmmo--;
 			CheckAmmo();
 		}
+		return;
 	}
+	StopFire();
 }
 
 void AWeapon::Reload()
 {
-	if (AmmoPool >= (MaxLoadedAmmo - LoadedAmmo)) {
+	if (AmmoPool >= (MaxLoadedAmmo - LoadedAmmo))
+	{
 		AmmoPool -= (MaxLoadedAmmo - LoadedAmmo);
 		LoadedAmmo = MaxLoadedAmmo;
 		bIsNeedReload = false;
@@ -89,18 +96,6 @@ void AWeapon::CheckAmmo()
 {
 	(LoadedAmmo <= LowAmmoMessage && AmmoPool > 0) ? bIsNeedReload = true : bIsNeedReload = false;
 	(LoadedAmmo <= 0 && AmmoPool <= 0) ? bIsNoAmmo = true : bIsNoAmmo = false;
-}
-
-void AWeapon::PlayAnimation(UAnimMontage* AnimMontage)
-{
-	if (AnimMontage != nullptr)
-	{
-		UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(AnimMontage, 1.0f);
-		}
-	}
 }
 
 int AWeapon::GetLoadedAmmo() const
@@ -131,4 +126,9 @@ bool AWeapon::IsNeedReload() const
 bool AWeapon::IsNoAmmo() const
 {
 	return bIsNoAmmo;
+}
+
+bool AWeapon::CanFire() const
+{
+	return LoadedAmmo > 0;
 }

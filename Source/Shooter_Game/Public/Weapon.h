@@ -37,17 +37,9 @@ protected:
 
 	void AutoFire();
 	void CheckAmmo();
-	void PlayAnimation(UAnimMontage* AnimMontage);
 
 
 	// Weapon Instance
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
-	//	UAnimMontage* FireAnimation;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
-	//	UAnimMontage* ReloadAnimation;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponInstance")
 		float ShootRangeInMeters;
 
@@ -74,6 +66,8 @@ protected:
 	bool bIsNeedReload;
 	bool bIsNoAmmo;
 
+public:
+
 	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		int GetLoadedAmmo() const;
 
@@ -91,6 +85,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
 		bool IsNoAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = WeaponInfo)
+		bool CanFire() const;
 
 public:
 
